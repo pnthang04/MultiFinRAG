@@ -42,3 +42,4 @@ outputs/*.pt
 outputs/**/*.pt
 outputs/*.faiss
 outputs/**/*.faiss
+model/**
