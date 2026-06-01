@@ -1,4 +1,4 @@
-﻿.env
+.env
 .venv/
 __pycache__/
 *.pyc
@@ -6,24 +6,39 @@ __pycache__/
 data/index_bge/
 data/index/
 outputs/**
-!outputs/**/
-!outputs/**/model_best.pth
-!outputs/**/model_best1.pth
-!outputs/**/model_besteefinal.pth
-!outputs/**/model_last.pth
 
 tmp/
 
 data/chunks/*_sample*.jsonl
 data/chunks/*_assets.jsonl
 
-*.json
-*.jsonl
-*.csv 
-*.pt 
-*.html 
-*.faiss 
-*.pdf 
-*.npy
-*.jpg 
-*.png 
+# Generated data files
+data/*.json
+data/**/*.json
+data/*.jsonl
+data/**/*.jsonl
+data/*.csv
+data/**/*.csv
+data/*.jpg
+data/**/*.jpg
+data/*.png
+data/**/*.png
+data/*.pt
+data/**/*.pt
+data/*.faiss
+data/**/*.faiss
+
+outputs/*.json
+outputs/**/*.json
+outputs/*.jsonl
+outputs/**/*.jsonl
+outputs/*.csv
+outputs/**/*.csv
+outputs/*.jpg
+outputs/**/*.jpg
+outputs/*.png
+outputs/**/*.png
+outputs/*.pt
+outputs/**/*.pt
+outputs/*.faiss
+outputs/**/*.faiss
