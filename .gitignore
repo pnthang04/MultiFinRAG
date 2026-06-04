@@ -5,7 +5,41 @@ __pycache__/
 
 data/index_bge/
 data/index/
-outputs/
+outputs/**
+
+tmp/
 
 data/chunks/*_sample*.jsonl
 data/chunks/*_assets.jsonl
+
+# Generated data files
+data/*.json
+data/**/*.json
+data/*.jsonl
+data/**/*.jsonl
+data/*.csv
+data/**/*.csv
+data/*.jpg
+data/**/*.jpg
+data/*.png
+data/**/*.png
+data/*.pt
+data/**/*.pt
+data/*.faiss
+data/**/*.faiss
+
+outputs/*.json
+outputs/**/*.json
+outputs/*.jsonl
+outputs/**/*.jsonl
+outputs/*.csv
+outputs/**/*.csv
+outputs/*.jpg
+outputs/**/*.jpg
+outputs/*.png
+outputs/**/*.png
+outputs/*.pt
+outputs/**/*.pt
+outputs/*.faiss
+outputs/**/*.faiss
+model/**

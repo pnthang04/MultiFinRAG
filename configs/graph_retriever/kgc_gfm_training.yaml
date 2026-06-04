@@ -33,14 +33,14 @@ training:
   pretrained_model_path: model/model.pth
   # Cấu hình ưu tiên GPU T4
   device: cuda
-  lr: 5.0e-4
-  epochs: 10
-  train_batch_size: 8
-  eval_batch_size: 8
+  lr: 5.0e-5
+  epochs: 2
+  train_batch_size: 2
+  eval_batch_size: 2
   logging_steps: 50
-  dtype: float16
+  dtype: float32
 
-  num_negative: 256
+  num_negative: 128
   strict_negative: true
   adversarial_temperature: 1.0
   fast_test: 500

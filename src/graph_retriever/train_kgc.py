@@ -87,6 +87,17 @@ def run_training(*, cfg: dict) -> Path:
         force=bool(cfg["graph"].get("force_rebuild_rel_attr", False)),
     )
 
+    # Filter target triple nếu entity_only=true (chỉ giữ entity→entity)
+    if cfg["training"].get("entity_only", False):
+        node_type = graph.node_type.cpu()
+        entity_type_id = list(graph.node_type_names).index("entity")
+        h_type = node_type[graph.target_edge_index[0]]
+        t_type = node_type[graph.target_edge_index[1]]
+        ee_mask = (h_type == entity_type_id) & (t_type == entity_type_id)
+        graph.target_edge_index = graph.target_edge_index[:, ee_mask]
+        graph.target_edge_type = graph.target_edge_type[ee_mask]
+        logger.info("entity_only=True: còn %d entity→entity triple", ee_mask.sum().item())
+
     graph = graph.to(device)
 
     # Import đúng các class từ repo tác giả sau khi bootstrap
@@ -136,12 +147,17 @@ def run_training(*, cfg: dict) -> Path:
         num_epoch=int(cfg["training"]["epochs"]),
         train_batch_size=int(cfg["training"]["train_batch_size"]),
         eval_batch_size=int(cfg["training"]["eval_batch_size"]),
+        max_steps_per_epoch=cfg["training"].get("max_steps_per_epoch"),
         logging_steps=int(cfg["training"]["logging_steps"]),
         save_best_only=bool(cfg["training"].get("save_best_only", True)),
         metric_for_best_model=str(cfg["training"].get("metric_for_best_model", "mrr")),
         eval_strategy=str(cfg["training"].get("eval_strategy", "epoch")),
+        eval_steps=cfg["training"].get("eval_steps"),
         dtype=str(cfg["training"].get("dtype", "float32")),
     )
+
+    _ft = cfg["training"].get("fast_test", 500)
+    fast_test_val = None if _ft is None else int(_ft)
 
     train_loader = _SingleGraphDatasetLoader(str(cfg["graph"].get("name", "local_graph")), graph)
     trainer = KGCTrainer(
@@ -154,7 +170,7 @@ def run_training(*, cfg: dict) -> Path:
         num_negative=int(cfg["training"]["num_negative"]),
         strict_negative=bool(cfg["training"]["strict_negative"]),
         adversarial_temperature=float(cfg["training"]["adversarial_temperature"]),
-        fast_test=int(cfg["training"].get("fast_test", 500)),
+        fast_test=fast_test_val,
         metrics=list(cfg["training"].get("metrics", ["mr", "mrr", "hits@10"])),
     )
 
@@ -185,6 +201,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--tensor-dir", type=Path, default=None, help="Ghi đè graph.tensor_dir.")
     p.add_argument("--output-dir", type=Path, default=None, help="Ghi đè training.output_dir.")
     p.add_argument("--epochs", type=int, default=None, help="Ghi đè training.epochs.")
+    p.add_argument(
+        "--max-steps-per-epoch",
+        type=int,
+        default=None,
+        help="Ghi đè training.max_steps_per_epoch để chạy smoke/short run.",
+    )
     p.add_argument(
         "--pretrained",
         type=Path,
@@ -217,6 +239,8 @@ def main(argv: list[str] | None = None) -> None:
         raw.training.output_dir = str(ns.output_dir.resolve())
     if ns.epochs is not None:
         raw.training.epochs = ns.epochs
+    if ns.max_steps_per_epoch is not None:
+        raw.training.max_steps_per_epoch = ns.max_steps_per_epoch
     if ns.pretrained is not None:
         raw.training.pretrained_model_path = str(ns.pretrained)
 
